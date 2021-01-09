@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
+using Npgsql.EntityFrameworkCore.PostgreSQL;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -18,6 +19,8 @@ using Microsoft.AspNetCore.Rewrite;
 using Prometheus;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
+
+
 
 namespace poi
 {
@@ -41,7 +44,9 @@ namespace poi
 
             var connectionString = poi.Utility.POIConfiguration.GetConnectionString(this.Configuration);
             services.AddDbContext<POIContext>(options =>
-                options.UseSqlServer(connectionString));
+                //options.UseSqlServer(connectionString));
+                options.UseNpgsql(connectionString));
+
 
             // Register the Swagger generator, defining 1 or more Swagger documents
             services.AddSwaggerGen(c =>
@@ -60,7 +65,7 @@ namespace poi
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseBrowserLink();
+                //app.UseBrowserLink();
             }else{
                 // https://github.com/prometheus-net/prometheus-net#aspnet-core-http-request-metrics
                 // "You should use either UseExceptionHandler() or a custom exception handler middleware. 
