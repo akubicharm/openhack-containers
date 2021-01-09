@@ -25,7 +25,7 @@ func SelectTripByIDQuery(tripID string) string {
 		UpdatedAt
 		FROM Trips
 		WHERE Id = '` + tripID + `'
-		AND Deleted = 0`
+		AND Deleted = '0'`
 }
 
 // SelectAllTripsQuery - select all trips
@@ -47,7 +47,7 @@ func SelectAllTripsQuery() string {
 	CreatedAt,
 	UpdatedAt
 	FROM Trips
-	WHERE Deleted = 0`
+	WHERE Deleted = '0'`
 }
 
 // SelectAllTripsForUserQuery REQUIRED userID
@@ -70,7 +70,7 @@ func SelectAllTripsForUserQuery(userID string) string {
 	UpdatedAt
 	FROM Trips
 	WHERE UserId ='` + userID + `'
-	AND Deleted = 0`
+	AND Deleted = '0'`
 }
 
 // DeleteTripPointsForTripQuery - REQUIRED tripID
@@ -98,7 +98,7 @@ func UpdateTripQuery(trip Trip) string {
 	HardStops = %d,
 	HardAccelerations = %d,
 	Distance = %g,
-	UpdatedAt = GETDATE()
+	UpdatedAt = now()
 	WHERE Id = '%s'`
 
 	var formattedQuery = fmt.Sprintf(
@@ -122,10 +122,9 @@ func UpdateTripQuery(trip Trip) string {
 	return formattedQuery
 }
 
+
 func createTripQuery(trip Trip) string {
-	var query = `DECLARE @tempReturn
-		TABLE (TripId NVARCHAR(128));
-		INSERT INTO Trips (
+	var query = `INSERT INTO Trips (
 			Name,
 			UserId,
 			RecordedTimeStamp,
@@ -140,8 +139,6 @@ func createTripQuery(trip Trip) string {
 			Distance,
 			UpdatedAt,
 			Deleted)
-			OUTPUT Inserted.ID
-			INTO @tempReturn
 			VALUES (
 				'%s',
 				'%s',
@@ -155,9 +152,9 @@ func createTripQuery(trip Trip) string {
 				%d,
 				%d,
 				%g,
-				GETDATE(),
-				'false');
-			SELECT TripId FROM @tempReturn`
+				now(),
+				'false')
+			RETURNING id`
 
 	var formattedQuery = fmt.Sprintf(
 		query,
@@ -182,27 +179,27 @@ func createTripQuery(trip Trip) string {
 func selectTripPointsForTripQuery(tripID string) string {
 
 	var query = `SELECT
-		[Id],
-		[TripId],
-		[Latitude],
-		[Longitude],
-		[Speed],
-		[RecordedTimeStamp],
-		[Sequence],
-		[RPM],
-		[ShortTermFuelBank],
-		[LongTermFuelBank],
-		[ThrottlePosition],
-		[RelativeThrottlePosition],
-		[Runtime],
-		[DistanceWithMalfunctionLight],
-		[EngineLoad],
-		[EngineFuelRate],
-		[VIN]
-	FROM [dbo].[TripPoints]
+		Id,
+		TripId,
+		Latitude,
+		Longitude,
+		Speed,
+		RecordedTimeStamp,
+		Sequence,
+		RPM,
+		ShortTermFuelBank,
+		LongTermFuelBank,
+		ThrottlePosition,
+		RelativeThrottlePosition,
+		Runtime,
+		DistanceWithMalfunctionLight,
+		EngineLoad,
+		EngineFuelRate,
+		VIN
+	FROM TripPoints
 	WHERE
 		TripId = '%s'
-	AND Deleted = 0`
+	AND Deleted = '0'`
 
 	var formattedQuery = fmt.Sprintf(
 		query,
@@ -215,26 +212,26 @@ func selectTripPointsForTripQuery(tripID string) string {
 
 func selectTripPointsForTripPointIDQuery(tripPointID string) string {
 	var query = `SELECT
-		[Id],
-		[TripId],
-		[Latitude],
-		[Longitude],
-		[Speed],
-		[RecordedTimeStamp],
-		[Sequence],
-		[RPM],
-		[ShortTermFuelBank],
-		[LongTermFuelBank],
-		[ThrottlePosition],
-		[RelativeThrottlePosition],
-		[Runtime],
-		[DistanceWithMalfunctionLight],
-		[EngineLoad],
-		[EngineFuelRate],
-		[VIN]
+		Id,
+		TripId,
+		Latitude,
+		Longitude,
+		Speed,
+		RecordedTimeStamp,
+		Sequence,
+		RPM,
+		ShortTermFuelBank,
+		LongTermFuelBank,
+		ThrottlePosition,
+		RelativeThrottlePosition,
+		Runtime,
+		DistanceWithMalfunctionLight,
+		EngineLoad,
+		EngineFuelRate,
+		VIN
 		FROM TripPoints
 		WHERE Id = '%s'
-		AND Deleted = 0`
+		AND Deleted = '0'`
 
 	var formattedQuery = fmt.Sprintf(
 		query,
@@ -246,32 +243,28 @@ func selectTripPointsForTripPointIDQuery(tripPointID string) string {
 }
 
 func createTripPointQuery(tripPoint TripPoint, tripID string) string {
-	var query = `DECLARE @tempReturn TABLE (TripPointId NVARCHAR(128));
-	INSERT INTO TripPoints (
-		[TripId],
-		[Latitude],
-		[Longitude],
-		[Speed],
-		[RecordedTimeStamp],
-		[Sequence],
-		[RPM],
-		[ShortTermFuelBank],
-		[LongTermFuelBank],
-		[ThrottlePosition],
-		[RelativeThrottlePosition],
-		[Runtime],
-		[DistanceWithMalfunctionLight],
-		[EngineLoad],
-		[EngineFuelRate],
-		[MassFlowRate],
-		[HasOBDData],
-		[HasSimulatedOBDData],
-		[VIN],
-		[UpdatedAt],
-		[Deleted])
-	OUTPUT
-		Inserted.ID
-	INTO @tempReturn
+	var query = `INSERT INTO TripPoints (
+		TripId,
+		Latitude,
+		Longitude,
+		Speed,
+		RecordedTimeStamp,
+		Sequence,
+		RPM,
+		ShortTermFuelBank,
+		LongTermFuelBank,
+		ThrottlePosition,
+		RelativeThrottlePosition,
+		Runtime,
+		DistanceWithMalfunctionLight,
+		EngineLoad,
+		EngineFuelRate,
+		MassFlowRate,
+		HasOBDData,
+		HasSimulatedOBDData,
+		VIN,
+		UpdatedAt,
+		Deleted)
 	VALUES (
 		'%s',
 		%g,
@@ -292,10 +285,9 @@ func createTripPointQuery(tripPoint TripPoint, tripID string) string {
 		'%s',
 		'%s',
 		'%s',
-		GETDATE(),
-		'false');
-	SELECT TripPointId
-	FROM @tempReturn`
+		now(),
+		'false')
+	RETURNING id`
 
 	var formattedQuery = fmt.Sprintf(
 		query,
@@ -325,25 +317,26 @@ func createTripPointQuery(tripPoint TripPoint, tripID string) string {
 }
 
 func updateTripPointQuery(tripPoint TripPoint) string {
-	var query = `UPDATE [TripPoints]
-			SET [TripId] = '%s',
-			[Latitude] = '%s',
-			[Longitude] = '%s',
-			[Speed] = '%s',
-			[RecordedTimeStamp] = '%s',
-			[Sequence] = %d,[RPM] = '%s',
-			[ShortTermFuelBank] = '%s',
-			[LongTermFuelBank] = '%s',
-			[ThrottlePosition] = '%s',
-			[RelativeThrottlePosition] = '%s',
-			[Runtime] = '%s',
-			[DistanceWithMalfunctionLight] = '%s',
-			[EngineLoad] = '%s',
-			[MassFlowRate] = '%s',
-			[EngineFuelRate] = '%s',
-			[HasOBDData] = '%s',
-			[HasSimulatedOBDData] = '%s',
-			[VIN] = '%s'
+	var query = `UPDATE TripPoints
+			SET TripId = '%s',
+			Latitude = '%s',
+			Longitude = '%s',
+			Speed = '%s',
+			RecordedTimeStamp = '%s',
+			Sequence = %d,
+			RPM = '%s',
+			ShortTermFuelBank = '%s',
+			LongTermFuelBank = '%s',
+			ThrottlePosition = '%s',
+			RelativeThrottlePosition = '%s',
+			Runtime = '%s',
+			DistanceWithMalfunctionLight = '%s',
+			EngineLoad = '%s',
+			MassFlowRate = '%s',
+			EngineFuelRate = '%s',
+			HasOBDData = '%s',
+			HasSimulatedOBDData = '%s',
+			VIN = '%s'
 		WHERE Id = '%s'`
 
 	var formattedQuery = fmt.Sprintf(
@@ -365,7 +358,7 @@ func updateTripPointQuery(tripPoint TripPoint) string {
 		tripPoint.MassFlowRate,
 		tripPoint.EngineFuelRate,
 		strconv.FormatBool(tripPoint.HasOBDData),
-		strconv.FormatBool(tripPoint.HasSimulatedOBDData),
+		strconv.FormatBool(tripPoint.HasSimulatedOBDData),		
 		tripPoint.VIN,
 		tripPoint.ID)
 

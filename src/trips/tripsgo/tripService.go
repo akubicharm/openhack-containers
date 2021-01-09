@@ -117,6 +117,8 @@ func getAllTripsForUser(w http.ResponseWriter, r *http.Request) {
 
 	var query = SelectAllTripsForUserQuery(params["userID"])
 
+	fmt.Fprintf(w, query)
+
 	tripRows, err := ExecuteQuery(query)
 
 	if err != nil {
@@ -128,9 +130,11 @@ func getAllTripsForUser(w http.ResponseWriter, r *http.Request) {
 
 	trips := []Trip{}
 
+
 	for tripRows.Next() {
 		var r Trip
-		err := tripRows.Scan(&r.ID,
+		err := tripRows.Scan(
+			&r.ID,
 			&r.Name,
 			&r.UserID,
 			&r.RecordedTimeStamp,

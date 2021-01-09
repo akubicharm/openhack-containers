@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	_ "github.com/lib/pq"
 )
 
 func getEnv(key, fallback string) string {
@@ -45,7 +46,7 @@ func getConfigValue(name string, fallback string) string {
 var (
 	debug    = flag.Bool("debug", false, "enable debugging")
 	password = flag.String("password", getConfigValue("SQL_PASSWORD", "changeme"), "the database password")
-	port     = flag.Int("port", 1433, "the database port")
+	port     = flag.Int("port", 5432, "the database port")
 	server   = flag.String("server", getConfigValue("SQL_SERVER", "changeme.database.windows.net"), "the database server")
 	user     = flag.String("user", getConfigValue("SQL_USER", "sqladmin"), "the database user")
 	database = flag.String("d", getConfigValue("SQL_DBNAME", "mydrivingDB"), "db_name")
@@ -53,13 +54,13 @@ var (
 
 // ExecuteNonQuery - Execute a SQL query that has no records returned (Ex. Delete)
 func ExecuteNonQuery(query string) (string, error) {
-	connString := fmt.Sprintf("server=%s;database=%s;user id=%s;password=%s;port=%d", *server, *database, *user, *password, *port)
+    connString := fmt.Sprintf("host=%s user=%s password=%s dbname=%s sslmode=require", *server, *user, *password, *database)
 
 	if *debug {
 		fmt.Printf("connString:%s\n", connString)
 	}
 
-	conn, err := sql.Open("mssql", connString)
+	conn, err := sql.Open("postgres", connString)
 
 	if err != nil {
 		return "", err
@@ -88,11 +89,11 @@ func ExecuteNonQuery(query string) (string, error) {
 
 // ExecuteQuery - Executes a query and returns the result set
 func ExecuteQuery(query string) (*sql.Rows, error) {
-	connString := fmt.Sprintf("server=%s;database=%s;user id=%s;password=%s;port=%d", *server, *database, *user, *password, *port)
+	connString := fmt.Sprintf("host=%s user=%s password=%s dbname=%s sslmode=require", *server, *user, *password, *database)
 
 	// Debug.Println("connString:%s\n", connString)
 
-	conn, err := sql.Open("mssql", connString)
+	conn, err := sql.Open("postgres", connString)
 
 	if err != nil {
 		logError(err, "Failed to connect to database.")
@@ -123,13 +124,13 @@ func ExecuteQuery(query string) (*sql.Rows, error) {
 
 // FirstOrDefault - returns the first row of the result set.
 func FirstOrDefault(query string) (*sql.Row, error) {
-	connString := fmt.Sprintf("server=%s;database=%s;user id=%s;password=%s;port=%d", *server, *database, *user, *password, *port)
+	connString := fmt.Sprintf("host=%s user=%s password=%s dbname=%s sslmode=require", *server, *user, *password, *database)
 
 	if *debug {
 		fmt.Printf("connString:%s\n", connString)
 	}
 
-	conn, err := sql.Open("mssql", connString)
+	conn, err := sql.Open("postgres", connString)
 
 	if err != nil {
 		return nil, err

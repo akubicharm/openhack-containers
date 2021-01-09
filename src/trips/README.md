@@ -85,9 +85,13 @@ To run the image
 # Example 1 - Set config values via environment variables
 docker run -d -p 8080:80 --name trips -e "SQL_PASSWORD=$SQL_PASSWORD" -e "SQL_SERVER=$SQL_SERVER" -e "OPENAPI_DOCS_URI=http://$EXTERNAL_IP" tripinsights/trips:1.0
 
+
 # Example 2 - Set configuration via files. Server will expect config values in files like /secrets/SQL_USER.
 # The secrets must be mounted from a host volume (eg. $HOST_FOLDER) into the /secrets container volume.
 docker run -d -p 8080:80 --name trips -v $HOST_FOLDER:/secrets tripinsights/trips:1.0
+
+# FOR MY LOCAL ENV
+docker run --rm -d -p 8080:80 --name trips -e "DEBUG_LOGGING=true" -e "SQL_DBNAME=$SQL_DBNAME"  -e "SQL_USER=$SQL_USER"  -e "SQL_PASSWORD=$SQL_PASSWORD" -e "SQL_SERVER=$SQL_SERVER" -e "OPENAPI_DOCS_URI=http://$EXTERNAL_IP" akubicharm/trips:pgsql
 ```
 
 ## Testing
@@ -130,6 +134,7 @@ List the trips for user `hacker2`.
 ```bash
 curl -i -X GET 'http://localhost:8080/api/trips/user/hacker2' 
 BROKEN - getAllTripsForUser - Error scanning Trips: sql: expected 14 destination arguments in Scan, not 15
+getAllTripsと同じように、Scanのコードに改行をいれたら直った
 ```
 
 List all the trip points for an existing trip with id `ea2f7ae0-3cef-49cb-b7d1-ce972113120c`.
@@ -137,7 +142,9 @@ List all the trip points for an existing trip with id `ea2f7ae0-3cef-49cb-b7d1-c
 ```bash
 curl -i -X GET 'http://localhost:8080/api/trips/ea2f7ae0-3cef-49cb-b7d1-ce972113120c/trippoints' 
 SLIGHTLY BROKEN - dates not serialising correctly
+VIN カラムのシリアライズができないので、null ではなく '' （空文字）を入れてひとまず対処
 ```
+
 
 Fetch an existing trip point with id `23dfc028-f84f-4230-b297-88a4bafb6c22` for an existing trip with id `ea2f7ae0-3cef-49cb-b7d1-ce972113120c`.
 
@@ -152,6 +159,8 @@ Create a new trip point for an existing trip with id `ea2f7ae0-3cef-49cb-b7d1-ce
 curl -i -X POST --header 'Content-Type: application/json' --header 'Accept: application/json' -d '{ "TripId": "ea2f7ae0-3cef-49cb-b7d1-ce972113120c", "Latitude": 47.67598, "Longitude": -122.10612, "RecordedTimeStamp": "2018-05-24T10:00:15.003Z", "Sequence": 1, "RPM": 720, "ShortTermFuelBank": -1, "LongTermFuelBank": -4, "ThrottlePosition": 16, "RelativeThrottlePosition": 6, "Runtime": 665, "EngineLoad": 16, "MassFlowRate": 20,   "EngineFuelRate": -255, "VIN": "JTEBU5JR9B5046693", "HasOBDData": true, "HasSimulatedOBDData": false }' 'http://localhost:8080/api/trips/ea2f7ae0-3cef-49cb-b7d1-ce972113120c/trippoints' 
 SLIGHTLY BROKEN - cannot specify VIN in POST.
 ```
+
+curl -i -X POST --header 'Content-Type: application/json' --header 'Accept: application/json' -d '{ "TripId": "1", "Latitude": 47.67598, "Longitude": -122.10612, "RecordedTimeStamp": "2018-05-24T10:00:15.003Z", "Sequence": 1, "RPM": 720, "ShortTermFuelBank": -1, "LongTermFuelBank": -4, "ThrottlePosition": 16, "RelativeThrottlePosition": 6, "Runtime": 665, "EngineLoad": 16, "MassFlowRate": 20,   "EngineFuelRate": -255, "VIN": "JTEBU5JR9B5046693", "HasOBDData": true, "HasSimulatedOBDData": false }' 'http://localhost:8080/api/trips/1/trippoints' 
 
 Update the `Latitude` and `Longitude` values for an existing trip point with id `23dfc028-f84f-4230-b297-88a4bafb6c22` for an existing trip with id `ea2f7ae0-3cef-49cb-b7d1-ce972113120c`.
 
