@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mydrive-user-deployment
+  namespace: api
+  labels:
+    deploy: mydrive-user
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: mydrive-user
+  template:
+    metadata:
+      labels:
+        app: mydrive-user
+    spec:
+      containers:
+      - image: "{{registry}}.azurecr.io/userprofile:1.0"
+        imagePullPolicy: Always
+        name: mydrive-user
+        livenessProbe:
+          httpGet:
+            path: /api/user/healthcheck
+            port: 80
+          initialDelaySeconds: 10
+          periodSeconds: 30
+        readinessProbe:
+          httpGet:
+            path: /api/user/healthcheck
+            port: 80
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        ports:
+          - containerPort: 80
+            name: http
+            protocol: TCP
+          - containerPort: 443
+            name: https
+            protocol: TCP
+        envFrom:
+          - secretRef:
+              name: sql
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: userprofile
+  namespace: api
+spec:
+  type: ClusterIP
+  selector:
+    app: mydrive-user
+  ports:
+    - protocol: TCP
+      name: mydrive-user-http
+      port: 80
+      targetPort: 80
+    - protocol: TCP
+      name: mydrive-user-https
+      port: 443
+      targetPort: 443
