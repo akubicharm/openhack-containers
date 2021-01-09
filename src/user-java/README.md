@@ -78,6 +78,9 @@ docker run -d -p 8080:80 --name user-java -e "SQL_PASSWORD=$SQL_PASSWORD" -e "SQ
 # Example 2 - Set configuration via files. Server will expect config values in files like /secrets/SQL_USER.
 # The secrets must be mounted from a host volume (eg. $HOST_FOLDER) into the /secrets container volume.
 docker run -d -p 8080:80 --name user-java -v $HOST_FOLDER:/secrets tripinsights/user-java:1.0
+
+# FOR MY LOCAL ENV
+docker run --rm -d -p 8080:80 --name user-java -e "DEBUG_LOGGING=true" -e "SQL_DBNAME=$SQL_DBNAME"  -e "SQL_USER=$SQL_USER"  -e "SQL_PASSWORD=$SQL_PASSWORD" -e "SQL_SERVER=$SQL_SERVER" akubicharm/user-java:pgsql
 ```
 
 ## Testing
