@@ -1,6 +1,5 @@
 'use strict';
 var Mockgen = require('../mockgen.js');
-var TYPES = require('tedious').TYPES;
 var queries = require('../queries');
 /**
  * Operations on /user/{userID}
@@ -16,12 +15,18 @@ module.exports = {
      */
     get: {
         200: function (req, res, callback) {
+            const query = {
+                name: 'SELECT_USER_PROFILE_BY_ID',
+                text: queries.SELECT_USER_PROFILE_BY_ID,
+                values: [req.params.userID]
+            }
 
-            req.sql(queries.SELECT_USER_PROFILE_BY_ID)
-                .param('user_profile_id', req.params.userID, TYPES.NVarChar)
-                .into(res, '{}');
-            callback;
-          
+            req.sql.connect().catch(err => console.error('connection error', err.stack))
+            req.sql.query(query)
+                .then(result => {console.log(result.rows); callback(null, JSON.stringify(result.rows))})
+                .catch(e => {console.error(e.stack); callback(e)})
+                .finally(() => req.sql.end())
+ 
         },
         default: function (req, res, callback) {
             /**
@@ -45,15 +50,37 @@ module.exports = {
      */
     post: {
         201: function (req, res, callback) {
-            
             var user = req.body;
-            user.Id = req.params.userID;
-            req.sql(queries.INSERT_USER_PROFILE)
-                .param('UserProfileJson', JSON.stringify(user), TYPES.VarChar)
-                .exec(res);
-            callback;
-        
+            var id = req.params.userID;
+            var firstName = user.FirstName;
+            var lastName = user.LastName;
+            var userId = user.UserId;
+            var profilePictureUri = user.ProfilePictureUri;
+            var rating = user.Rating;
+            var ranking = user.Ranking;
+            var totalDistance = user.TotalDistance;
+            var totalTrips = user.TotalTrips;
+            var totalTime = user.TotalTime;
+            var hardStops = user.HardStops;
+            var hardAccelerations = user.HardAccelerations;
+            var fuelConsumption = user.FuelConsumption;
+            var maxSpeed = user.MaxSpeed;
+
+            console.log("firstName:" + firstName)
+
+            const query = {
+                name: 'INSERT_USER_PROFILE',
+                text: queries.INSERT_USER_PROFILE,
+                values: [id, firstName, lastName, userId, profilePictureUri, rating, ranking, totalDistance, totalTrips, totalTime, hardStops, hardAccelerations, fuelConsumption, maxSpeed]
+            }
+
+            req.sql.connect().catch(err => console.error('connection error', err.stack))
+            req.sql.query(query)
+                .then(result => {console.log(result.rows); callback(null, JSON.stringify(result.rows[0]))})
+                .catch(e => {console.error(e.stack); callback(e)})
+                .finally(() => req.sql.end())
         },
+        
         default: function (req, res, callback) {
             /**
              * Using mock data generator module.
@@ -75,7 +102,38 @@ module.exports = {
      * operationId: updateUser
      */
     patch: {
-        200: function (req, res, callback) {
+        200: function(req, res, callback) {
+            var user = req.body;
+            var firstName = user.FirstName;
+            var lastName = user.LastName;
+            var userId = user.UserId;
+            var profilePictureUri = user.ProfilePictureUri;
+            var rating = user.Rating;
+            var ranking = user.Ranking;
+            var totalDistance = user.TotalDistance;
+            var totalTrips = user.TotalTrips;
+            var totalTime = user.TotalTime;
+            var hardStops = user.HardStops;
+            var hardAccelerations = user.HardAccelerations;
+            var fuelConsumption = user.FuelConsumption;
+            var maxSpeed = user.MaxSpeed; 
+            var deleted = user.Deleted;
+            var id = req.params.userID;
+            user.Id = req.params.userID; 
+           
+            const query = {
+                name: 'UPDATE_USER_PROFILE',
+                text: queries.UPDATE_USER_PROFILE,
+                values: [id, firstName, lastName, userId, profilePictureUri, rating, ranking, totalDistance, totalTrips, totalTime, hardStops, hardAccelerations, fuelConsumption, maxSpeed, deleted]
+            }
+
+            req.sql.connect().catch(err => console.error('connection error', err.stack))
+            req.sql.query(query)
+                .then(result => {console.log(result.rows); callback(null, JSON.stringify(result.rows[0]))})
+                .catch(e => {console.error(e.stack); callback(e)})
+                .finally(() => req.sql.end())           
+        },
+/*         200: function (req, res, callback) {
  
             var user = req.body;
             user.Id = req.params.userID;
@@ -85,7 +143,7 @@ module.exports = {
                 .exec(res);
             callback;
             
-        },
+        }, */
         404: function (req, res, callback) {
             /**
              * Using mock data generator module.
@@ -119,6 +177,20 @@ module.exports = {
      */
     delete: {
         204: function (req, res, callback) {
+            const query = {
+                name: 'DELETE_USER_PROFILE',
+                text: queries.DELETE_USER_PROFILE,
+                values: [req.params.userID]
+            }
+
+            req.sql.connect().catch(err => console.error('connection error', err.stack))
+            req.sql.query(query)
+                .then(result => {console.log(result.rows); callback(null, JSON.stringify(result.rows))})
+                .catch(e => {console.error(e.stack); callback(e)})
+                .finally(() => req.sql.end())
+ 
+        },        
+/*         204: function (req, res, callback) {
             var tempmessage = '';
             var resmessage = tempmessage.concat('User profile ',req.params.userID,' deleted');
             req.sql(queries.DELETE_USER_PROFILE)
@@ -126,7 +198,7 @@ module.exports = {
                 .into(res, resmessage);
             callback;
 
-        },
+        }, */
         404: function (req, res, callback) {
             /**
              * Using mock data generator module.

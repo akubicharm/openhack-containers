@@ -22,8 +22,9 @@ module.exports = {
             if (err) {
                 next(err);
                 return;
-            }
-            res.status(status).send(data && data.responses);
+            } 
+            //res.status(status).send(data && data.responses);
+            res.status(status).send(data);
         });
     }
 };

@@ -23,7 +23,7 @@ module.exports = {
                 next(err);
                 return;
             }
-            res.status(status).send(data && data.responses);
+            res.status(status).send(data);
         });
     },
     /**
@@ -45,7 +45,7 @@ module.exports = {
                 next(err);
                 return;
             }
-            res.status(status).send(data && data.responses);
+            res.status(status).send(data);
         });
     },
     /**
@@ -67,7 +67,7 @@ module.exports = {
                 next(err);
                 return;
             }
-            res.status(status).send(data && data.responses);
+            res.status(status).send(data);
         });
     },
     /**
@@ -89,7 +89,7 @@ module.exports = {
                 next(err);
                 return;
             }
-            res.status(status).send(data && data.responses);
+            res.status(status).send(data);
         });
     }
 };

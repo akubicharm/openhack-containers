@@ -6,7 +6,6 @@ var Express = require('express');
 var BodyParser = require('body-parser');
 var Swaggerize = require('swaggerize-express');
 var Path = require('path');
-var tediousExpress = require('express4-tedious');
 var morgan = require('morgan');
 const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('./config/swagger.json');
@@ -20,6 +19,7 @@ const metricsMiddleware = promBundle({
     }
   }
 });
+const pg = require('pg');
 
 // Configuration and potential overrides
 function getConfigValue(config) {
@@ -60,23 +60,18 @@ var logger = morgan(':remote-addr [:date[web]] :method :url HTTP/:http-version :
 App.use(logger);
 
 var sqlConfig = {
-    authentication: {
-      type: "default",
-      options: {
-        userName: sqlUser,
-        password: sqlPassword
-      }
-    },
-    server: sqlServer,
-    options: {
-      database: sqlDBName
-    }
+    host: sqlServer,
+    user: sqlUser,
+    password: sqlPassword,
+    database: sqlDBName,
+    port: 5432,
+    ssl: true
 };
 
 App.use(metricsMiddleware);
 
 App.use(function (req, res, next) {
-    req.sql = tediousExpress(sqlConfig);
+    req.sql = new pg.Client(sqlConfig);
     next();
 });
 

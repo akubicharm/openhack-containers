@@ -15,11 +15,18 @@ module.exports = {
      */
     get: {
         200: function (req, res, callback) {
-            
-            req.sql(queries.SELECT_USER_PROFILES)
-                .into(res);
-            callback;
-        
+            const query = {
+                name: 'SELECT_USER_PROFILES',
+                text: 'select * FROM UserProfiles'
+            }
+
+            req.sql.connect().catch(err => console.error('connection error', err.stack))
+            req.sql.query(query)
+                //.then(result => callback(JSON.stringify(result.rows)))
+                .then(result => {console.log(JSON.stringify(result.rows)); callback(null, JSON.stringify(result.rows))})
+                .catch(e => {console.error(e.stack); callback(e)})
+                .finally(() => req.sql.end())
+
         },
         default: function (req, res, callback) {
 

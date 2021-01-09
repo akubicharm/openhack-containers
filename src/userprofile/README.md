@@ -70,9 +70,15 @@ To run the image
 # Example 1 - Set config values via environment variables
 docker run -d -p 8080:80 --name userprofile -e "SQL_PASSWORD=$SQL_PASSWORD" -e "SQL_SERVER=$SQL_SERVER" tripinsights/userprofile:1.0
 
+
+docker run --rm -d -p 8080:80 --name userprofile -e "SQL_PASSWORD=$SQL_PASSWORD" -e "SQL_SERVER=$SQL_SERVER" -e "SQL_USER=$SQL_USER" -e "SQL_DBNAME=$SQL_DBNAME" pguserprofile
+
 # Example 2 - Set configuration via files. Server will expect config values in files like /secrets/SQL_USER.
 # The secrets must be mounted from a host volume (eg. $HOST_FOLDER) into the /secrets container volume.
 docker run -d -p 8080:80 --name userprofile -v $HOST_FOLDER:/secrets tripinsights/userprofile:1.0
+
+# FOR MY LOCAL ENV
+docker run --rm -d -p 8080:80 --name userprofile -e "DEBUG_LOGGING=true" -e "SQL_DBNAME=$SQL_DBNAME"  -e "SQL_USER=$SQL_USER"  -e "SQL_PASSWORD=$SQL_PASSWORD" -e "SQL_SERVER=$SQL_SERVER" akubicharm/userprofile:pgsql
 ```
 
 ## Testing

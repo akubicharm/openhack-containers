@@ -18,43 +18,26 @@ exports.INSERT_USER_PROFILE =
   CreatedAt,
   UpdatedAt,
   Deleted
-)
-SELECT
-  Id,
-  FirstName,
-  LastName,
-  UserId,
-  ProfilePictureUri,
-  Rating,
-  Ranking,
-  TotalDistance,
-  TotalTrips,
-  TotalTime,
-  HardStops,
-  HardAccelerations,
-  FuelConsumption,
-  MaxSpeed,
-  GETDATE(),
-  GETDATE(),
-  Deleted
-FROM OPENJSON(@UserProfileJson) WITH 
-(
-  Id nvarchar(128),
-  FirstName nvarchar(max),
-  LastName nvarchar(max),
-  UserId nvarchar(max),
-  ProfilePictureUri nvarchar(max),
-  Rating int,
-  Ranking int,
-  TotalDistance float(53),
-  TotalTrips bigint,
-  TotalTime bigint,
-  HardStops bigint,
-  HardAccelerations bigint,
-  FuelConsumption float(53),
-  MaxSpeed float(53),
-  Deleted bit
-) AS JSON`;
+) values (
+  $1,
+  $2,
+  $3,
+  $4,
+  $5,
+  $6,
+  $7,
+  $8,
+  $9,
+  $10,
+  $11,
+  $12,
+  $13,
+  $14,
+  now(),
+  now(),
+  '0')
+  RETURNING *`;
+
 
 exports.UPDATE_USER_PROFILE=
 `UPDATE UserProfiles
@@ -77,53 +60,36 @@ SET
 FROM 
   ( SELECT
       u.Id,
-      COALESCE(payload.FirstName, u.FirstName) AS FirstName,
-      COALESCE(payload.LastName, u.LastName) AS LastName,
-      COALESCE(payload.UserId, u.UserId) AS UserId,
-      COALESCE(payload.ProfilePictureUri, u.ProfilePictureUri) AS ProfilePictureUri,
-      COALESCE(payload.Rating, u.Rating) AS Rating,
-      COALESCE(payload.Ranking, u.Ranking) AS Ranking,
-      COALESCE(payload.TotalDistance, u.TotalDistance) AS TotalDistance,
-      COALESCE(payload.TotalTrips, u.TotalTrips) AS TotalTrips,
-      COALESCE(payload.TotalTime, u.TotalTime) AS TotalTime,
-      COALESCE(payload.HardStops, u.HardStops) AS HardStops,
-      COALESCE(payload.HardAccelerations, u.HardAccelerations) AS HardAccelerations,
-      COALESCE(payload.FuelConsumption, u.FuelConsumption) AS FuelConsumption,
-      COALESCE(payload.MaxSpeed, u.MaxSpeed) AS MaxSpeed, 
+      COALESCE($2, u.FirstName) AS FirstName,
+      COALESCE($3, u.LastName) AS LastName,
+      COALESCE($4, u.UserId) AS UserId,
+      COALESCE($5, u.ProfilePictureUri) AS ProfilePictureUri,
+      COALESCE($6, u.Rating) AS Rating,
+      COALESCE($7, u.Ranking) AS Ranking,
+      COALESCE($8, u.TotalDistance) AS TotalDistance,
+      COALESCE($9, u.TotalTrips) AS TotalTrips,
+      COALESCE($10, u.TotalTime) AS TotalTime,
+      COALESCE($11, u.HardStops) AS HardStops,
+      COALESCE($12, u.HardAccelerations) AS HardAccelerations,
+      COALESCE($13, u.FuelConsumption) AS FuelConsumption,
+      COALESCE($14, u.MaxSpeed) AS MaxSpeed, 
       u.CreatedAt,
-      GETDATE() AS UpdatedAt,
-      COALESCE(payload.Deleted , u.Deleted) AS Deleted
+      now() AS UpdatedAt,
+      COALESCE($15 , u.Deleted) AS Deleted
     FROM   
       UserProfiles u
-      INNER JOIN OPENJSON(@UserProfileJson) WITH 
-      (
-        Id nvarchar(128),
-        FirstName nvarchar(max),
-        LastName nvarchar(max),
-        UserId nvarchar(max),
-        ProfilePictureUri nvarchar(max),
-        Rating int,
-        Ranking int,
-        TotalDistance float(53),
-        TotalTrips bigint,
-        TotalTime bigint,
-        HardStops bigint,
-        HardAccelerations bigint,
-        FuelConsumption float(53),
-        MaxSpeed float(53),
-        Deleted bit
-      ) payload ON u.Id = payload.Id
     WHERE 
-      u.Id = @user_profile_id 
+      u.Id = $1 
   ) updaterecord
 WHERE
-    UserProfiles.Id = updaterecord.Id`;
+    UserProfiles.Id = updaterecord.Id
+RETURNING *`;
     
 exports.SELECT_USER_PROFILE_BY_ID=
- 'select * from UserProfiles WHERE id = @user_profile_id FOR JSON PATH';
+ 'select * from UserProfiles WHERE id = $1';
 
 exports.SELECT_USER_PROFILES=
- 'select * FROM UserProfiles FOR JSON PATH';
+ 'select * FROM UserProfiles';
 
 exports.DELETE_USER_PROFILE=
- 'UPDATE UserProfiles SET Deleted = 1 WHERE id = @user_profile_id';
+ 'UPDATE UserProfiles SET Deleted = TRUE WHERE id = $1';
