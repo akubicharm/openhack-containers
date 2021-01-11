@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.validation.Valid;
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
+
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2018-08-03T19:26:46.543Z")
 
 @Controller
@@ -64,6 +66,19 @@ public class UserApiController implements UserApi {
         }
 
         return new ResponseEntity<Profile>(HttpStatus.NOT_IMPLEMENTED);
+    }
+
+    public ResponseEntity<List> getAllUsers() {
+        String accept = request.getHeader("Accept");
+        if (accept != null && accept.contains("application/json")) {
+            try {
+                return new ResponseEntity<List>(userRepositoryService.findAll(), HttpStatus.OK);
+            } catch (Exception e) {
+                log.error("Couldn't create new profile", e.getMessage());
+                return new ResponseEntity<List>(HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        }       
+        return new ResponseEntity<List>(HttpStatus.NOT_IMPLEMENTED);
     }
 
 }

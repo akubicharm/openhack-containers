@@ -6,6 +6,7 @@
     using System.Net.Http;
     using System.Net.Http.Headers;
     using System.Threading.Tasks;
+    using System;
 
     public class UserStore : BaseStore//, IBaseStore<User>
     {
@@ -29,7 +30,8 @@
         public async Task<List<User>> GetItemsAsync()
         {
             List<User> users = null;
-            HttpResponseMessage response = await Client.GetAsync("/api/user");
+            HttpResponseMessage response = await Client.GetAsync("/api/user-java");
+
             if (response.IsSuccessStatusCode)
             {
                 var str = await response.Content.ReadAsStringAsync();

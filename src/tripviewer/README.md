@@ -60,6 +60,8 @@ To run the image
 docker run -d -p 8080:80 --name tripviewer -e "USERPROFILE_API_ENDPOINT=http://$ENDPOINT" -e "TRIPS_API_ENDPOINT=http://$ENDPOINT" tripinsights/tripviewer:1.0
 ```
 
+docker run --rm -d -p 8081:80 --name tripviewer -e "USERPROFILE_API_ENDPOINT=http://20.48.83.36/" -e "TRIPS_API_ENDPOINT=http://$ENDPOINT" akubicharm/tripviewer:pgsql
+
 ## Testing
 
 Open "http://localhost:8080/" in the browser. While running the docker container, header and documentation links will be broken as they rely on the Trip Insights APIs to be running and reachable.

@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import java.util.List;
 import javax.validation.Valid;
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2018-08-03T19:26:46.543Z")
 
@@ -40,4 +41,13 @@ public interface UserApi {
             method = RequestMethod.POST)
     ResponseEntity<Profile> userPOST(@ApiParam(value = "User's unique ID",required=true) @PathVariable("userID") String userID,@ApiParam(value = "Details of the profile" ,required=true )  @Valid @RequestBody Profile profile);
 
+
+    @ApiOperation(value = "", nickname = "getAllUsers", notes = "Get All Users", response = Profile.class, tags={  })
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "All Users Listed", response = Profile.class),
+            @ApiResponse(code = 200, message = "Unknown Error", response = ErrorResponseDefault.class) })
+    @RequestMapping(value = "/user-java",
+            //consumes = { "application/json" },
+            method = RequestMethod.GET)
+    ResponseEntity<List> getAllUsers();
 }

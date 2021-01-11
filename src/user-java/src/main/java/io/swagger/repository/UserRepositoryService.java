@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.util.Optional;
+import java.util.List;
 
 @Service
 public class UserRepositoryService {
@@ -60,7 +61,13 @@ public class UserRepositoryService {
         return userProfile;
     }
 
-    private Profile findOne(String Id) {
+
+    public List<Profile> findAll() {
+        return this.userRepository.findAll();
+
+    }
+
+    public Profile findOne(String Id) {
         Preconditions.checkNotNull(Id, "User Id cannot be null");
         return this.userRepository.getOne(Id);        
     }

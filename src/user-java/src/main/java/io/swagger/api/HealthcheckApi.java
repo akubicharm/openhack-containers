@@ -33,7 +33,7 @@ public interface HealthcheckApi {
         @ApiResponse(code = 200, message = "An error occurred", response = ErrorResponseDefault.class) })
     @RequestMapping(value = "/user-java/healthcheck",
         produces = { "application/json" }, 
-        method = RequestMethod.GET)
+        method = RequestMethod.GET)    
     ResponseEntity<Healthcheck> healthcheckUserGet();
 
 }
