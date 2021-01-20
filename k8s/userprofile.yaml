@@ -16,7 +16,7 @@ spec:
         app: mydrive-user
     spec:
       containers:
-      - image: "{{registry}}.azurecr.io/userprofile:1.0"
+      - image: "{{registry}}/userprofile:pgsql"
         imagePullPolicy: Always
         name: mydrive-user
         livenessProbe:

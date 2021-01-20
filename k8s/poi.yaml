@@ -16,7 +16,7 @@ spec:
         app: poi
     spec:
       containers:
-      - image: "{{registry}}.azurecr.io/poi:1.0"
+      - image: "{{registry}}/poi:pgsql"
         imagePullPolicy: Always
         name: poi
         livenessProbe:

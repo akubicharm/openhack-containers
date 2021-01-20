@@ -16,7 +16,7 @@ spec:
         app: user-java
     spec:
       containers:
-      - image: "{{registry}}.azurecr.io/user-java:1.0"
+      - image: "{{registry}}/user-java:pgsql"
         imagePullPolicy: Always
         name: user-java
         livenessProbe:
