@@ -7,6 +7,9 @@ import io.swagger.model.Profile;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import org.springframework.retry.annotation.Retryable;
+import org.springframework.retry.annotation.Backoff;
+
 import java.sql.Timestamp;
 import java.util.Optional;
 import java.util.List;
@@ -62,7 +65,9 @@ public class UserRepositoryService {
     }
 
 
+    @Retryable(value = {Throwable.class}, maxAttempts = 5, backoff = @Backoff(delay = 3000))
     public List<Profile> findAll() {
+        LOGGER.info("findAll");
         return this.userRepository.findAll();
 
     }
