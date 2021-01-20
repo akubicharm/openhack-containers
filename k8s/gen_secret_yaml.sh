@@ -1,6 +1,6 @@
-SQL_USER="myadmin@keomizosingle"
-SQL_PASSWORD="@dmin12345678"
-SQL_SERVER="keomizosingle.postgres.database.azure.com"
+SQL_USER="[ユーザ名]"
+SQL_PASSWORD="[パスワード]"
+SQL_SERVER="[サーバ名].postgres.database.azure.com"
 SQL_DBNAME="mydrivingdb"
 _SQL_USER=`echo $SQL_USER | base64`
 _SQL_PASSWORD=`echo $SQL_PASSWORD | base64`
