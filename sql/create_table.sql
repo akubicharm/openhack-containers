@@ -12,7 +12,7 @@ CREATE TABLE Devices(
 (
         Id 
 )
-)
+);
 
 DROP TABLE factMLOutputData;
 CREATE TABLE factMLOutputData(
@@ -26,7 +26,7 @@ PRIMARY KEY
 (
         id 
 )
-)
+);
 
 DROP TABLE IOTHubDatas;
 CREATE TABLE IOTHubDatas(
@@ -152,7 +152,7 @@ CREATE TABLE UserProfiles(
 (
         Id 
 )
-)
+);
 
 
 DROP TABLE POISource;
