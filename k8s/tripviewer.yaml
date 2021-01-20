@@ -16,7 +16,7 @@ spec:
         app: tripviewer
     spec:
       containers:
-      - image: "{{registry}}.azurecr.io/tripviewer:2.0"
+      - image: "{{registry}}/tripviewer:pgsql"
         imagePullPolicy: Always
         name: tripviewer
         ports:

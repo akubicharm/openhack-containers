@@ -16,7 +16,7 @@ spec:
         app: trips
     spec:
       containers:
-      - image: "{{registry}}.azurecr.io/trips:1.0"
+      - image: "{{registry}}/trips:pgsql"
         imagePullPolicy: Always
         name: trips
         livenessProbe:
